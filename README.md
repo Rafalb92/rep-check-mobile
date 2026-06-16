@@ -1,56 +1,87 @@
-# Welcome to your Expo app 👋
+# RepCheck
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> On-device movement screening for coaches and physiotherapists — record a movement, get instant joint-angle analysis, rep segmentation, and a shareable report. No video ever leaves the device.
 
-## Get started
+**Status:** 🚧 Early development — MVP in progress
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Overview
 
-2. Start the app
+RepCheck turns a phone into a movement-analysis tool. A trainer records a client performing a standard screen (e.g. an overhead squat), and the app runs pose estimation **entirely on-device** to compute joint angles, segment repetitions, flag asymmetries, and produce a clean report the trainer can share with the client.
 
-   ```bash
-   npx expo start
-   ```
+Built mobile-first for the gym/clinic floor, with privacy by design: analysis runs locally, and only derived metrics — never raw video — are stored or synced.
 
-In the output, you'll find options to open the app in a
+## Tech stack
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+**App (current)**
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+- Expo SDK 56 / React Native (New Architecture)
+- TypeScript
+- UniWind (Tailwind-for-React-Native styling)
+- Expo Router
 
-## Get a fresh project
+**Computer vision & analysis (in progress)**
 
-When you're ready, run:
+- `react-native-vision-camera` — capture
+- MediaPipe Pose Landmarker — on-device pose estimation (BlazePose, 33 landmarks)
+- `react-native-skia` — real-time skeleton overlay
+- Custom DSP (TypeScript) — joint angles, rep segmentation, scoring
+- `victory-native` — charts
+
+**Persistence**
+
+- `expo-sqlite` + Drizzle ORM (local-first)
+
+**Planned (post-MVP)**
+
+- NestJS API + PostgreSQL (Neon) — auth, sync, billing
+- Stripe — subscriptions
+
+## Requirements
+
+- Node.js 22.11+
+- **JDK 17** — required. Newer JDKs (21/26) are **not** supported by the Android toolchain for RN 0.83. JDK 17 is the current LTS standard.
+- Android Studio + Android SDK (Platform 35/36, platform-tools, emulator)
+- A physical Android device (recommended for camera / pose testing)
+
+> ⚠️ **JDK note:** This project builds only on **JDK 17**. If your default `JAVA_HOME` points at a newer JDK, Android builds fail at the Gradle toolchain step. Point `JAVA_HOME` at your JDK 17 install for this project (you can keep other JDKs installed for other work).
+
+## Getting started
 
 ```bash
-npm run reset-project
+# install dependencies
+npm install
+
+# build & install the dev client on a connected device/emulator (first run is slow)
+npx expo run:android
+
+# daily loop, once the dev client is installed
+npx expo start --dev-client
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+RepCheck relies on native modules (camera, pose detection), so it runs in a **development build**, not Expo Go. Rebuild with `npx expo run:android` only when native dependencies change — JavaScript changes hot-reload instantly.
 
-### Other setup steps
+## Project structure
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+_(grows as the app develops)_
 
-## Learn more
+```
+app/              # screens (expo-router)
+src/
+  components/     # UI components
+  vision/         # camera + pose pipeline
+  analysis/       # DSP: joint angles, segmentation, scoring
+  db/             # drizzle schema + queries
+  store/          # zustand state
+global.css        # UniWind / Tailwind entry
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## Roadmap
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+High level: **capture → on-device pose → analysis → report → local history → shareable report.**
+Detailed 2-week MVP breakdown lives in `ROADMAP.md`.
 
-## Join the community
+## License
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+TBD
