@@ -35,6 +35,13 @@
             "imageWidth": 76
           }
         }
+      ],
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "RepCheck needs the camera to record movement screens.",
+          "enableMicrophonePermission": true
+        }
       ]
     ],
     "experiments": {
