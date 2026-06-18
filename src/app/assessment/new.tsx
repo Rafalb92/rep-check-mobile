@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import {
+    Delegate,
+    RunningMode,
+    usePoseDetection,
+} from "react-native-mediapipe-posedetection";
+import {
     Camera,
     useCameraDevice,
     useCameraPermission,
@@ -19,6 +24,29 @@ export default function NewAssessment() {
     "worklet";
     console.log(`frame: ${frame.width}x${frame.height} ${frame.pixelFormat}`);
   }, []);
+
+  const poseDetection = usePoseDetection(
+    {
+      onResults: (bundle) => {
+        const person = bundle.results?.[0]?.landmarks?.[0];
+        if (!person || person.length === 0) return;
+
+        const nose = person[0];
+        if (nose?.visibility == null) return; // odcina undefined
+
+        console.log(
+          "nose y:",
+          nose.y.toFixed(3),
+          "visible:",
+          nose.visibility.toFixed(2),
+        );
+      },
+      onError: (e) => console.error("pose error:", e.message),
+    },
+    RunningMode.LIVE_STREAM,
+    "pose_landmarker_lite.task",
+    { numPoses: 1, delegate: Delegate.GPU },
+  );
 
   if (!hasPermission) {
     return (
@@ -52,7 +80,8 @@ export default function NewAssessment() {
         style={StyleSheet.absoluteFill}
         device={device}
         isActive={true}
-        frameProcessor={frameProcessor}
+        pixelFormat="rgb"
+        frameProcessor={poseDetection.frameProcessor}
       />
     </View>
   );

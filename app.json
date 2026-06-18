@@ -42,6 +42,10 @@
           "cameraPermissionText": "RepCheck needs the camera to record movement screens.",
           "enableMicrophonePermission": true
         }
+      ],
+      [
+        "react-native-mediapipe-posedetection",
+        { "assetsPaths": ["./assets/models/"] }
       ]
     ],
     "experiments": {
