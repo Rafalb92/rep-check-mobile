@@ -4,6 +4,7 @@ import {
     Camera,
     useCameraDevice,
     useCameraPermission,
+    useFrameProcessor,
 } from "react-native-vision-camera";
 
 export default function NewAssessment() {
@@ -13,6 +14,11 @@ export default function NewAssessment() {
   useEffect(() => {
     if (!hasPermission) requestPermission();
   }, [hasPermission, requestPermission]);
+
+  const frameProcessor = useFrameProcessor((frame) => {
+    "worklet";
+    console.log(`frame: ${frame.width}x${frame.height} ${frame.pixelFormat}`);
+  }, []);
 
   if (!hasPermission) {
     return (
@@ -42,7 +48,12 @@ export default function NewAssessment() {
 
   return (
     <View className="flex-1 bg-background">
-      <Camera style={StyleSheet.absoluteFill} device={device} isActive={true} />
+      <Camera
+        style={StyleSheet.absoluteFill}
+        device={device}
+        isActive={true}
+        frameProcessor={frameProcessor}
+      />
     </View>
   );
 }
