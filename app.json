@@ -45,8 +45,14 @@
       ],
       [
         "react-native-mediapipe-posedetection",
-        { "assetsPaths": ["./assets/models/"] }
-      ]
+        {
+          "assetsPaths": [
+            "./assets/models/"
+          ]
+        }
+      ],
+      "expo-image",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true,
